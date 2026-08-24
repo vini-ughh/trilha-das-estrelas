@@ -1,0 +1,17 @@
+{
+  "name": "trilha-das-estrelas",
+  "version": "1.0.0",
+  "description": "Quiz infantil com progresso visual e API documentada.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "pg": "^8.13.1",
+    "socket.io": "^4.8.1",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
