@@ -26,16 +26,32 @@
         </div>
         <label for="player-name">Como podemos te chamar?</label>
         <input id="player-name" type="text" maxlength="18" placeholder="Digite seu nome" autocomplete="name" required>
-        <div id="room-code-field">
+        <div id="room-code-field" class="hidden">
           <label for="room-code">Código da sala</label>
           <input id="room-code" type="text" maxlength="6" placeholder="Ex.: A1B2C3" autocomplete="off">
         </div>
         <div id="create-options" class="create-options">
           <div class="field-row">
-            <div><label for="question-count">Quantidade de estrelas</label><select id="question-count"><option value="5">5 estrelas</option><option value="10" selected>10 estrelas</option><option value="15">15 estrelas</option><option value="20">20 estrelas</option></select></div>
-            <div><label for="question-level">Dificuldade</label><select id="question-level"><option value="todos">Todas</option><option value="facil">Fácil</option><option value="medio">Médio</option><option value="dificil">Difícil</option></select></div>
+            <div class="config-field">
+              <label for="question-count">Quantas rodadas?</label>
+              <select id="question-count">
+                <option value="5">5 rodadas</option>
+                <option value="10" selected>10 rodadas</option>
+                <option value="15">15 rodadas</option>
+                <option value="20">20 rodadas</option>
+              </select>
+            </div>
+            <div class="config-field">
+              <label for="question-level">Qual a dificuldade?</label>
+              <select id="question-level">
+                <option value="todos">Todas</option>
+                <option value="facil">🟢 Fácil</option>
+                <option value="medio">🟡 Médio</option>
+                <option value="dificil">🔴 Difícil</option>
+              </select>
+            </div>
           </div>
-          <p class="field-note">Você poderá controlar a partida depois de criar a sala.</p>
+          <p class="field-note">✨ Você poderá controlar a partida depois de criar a sala.</p>
         </div>
         <button class="primary-button" type="submit">Entrar na aventura <span>→</span></button>
       </form>
@@ -80,8 +96,14 @@
         <div class="scoreboard-heading"><div><span class="eyebrow">SALA ONLINE</span><h3>Placar ao vivo</h3></div><strong id="room-code-label">------</strong></div>
         <p id="room-status" class="room-status">Aguardando jogadores...</p>
         <div id="admin-panel" class="admin-panel hidden">
-          <p class="admin-label">CONTROLE DA PARTIDA</p>
-          <div class="admin-actions"><button id="start-game" type="button">▶ Iniciar</button><button id="pause-game" type="button">Ⅱ Pausar</button><button id="end-game" type="button">■ Encerrar</button></div>
+          <div class="admin-header">
+            <p class="admin-label">⚙️ CONTROLE DA PARTIDA</p>
+          </div>
+          <div class="admin-actions">
+            <button id="start-game" class="admin-btn admin-btn-start" type="button">▶ Iniciar</button>
+            <button id="pause-game" class="admin-btn admin-btn-pause" type="button">⏸ Pausar</button>
+            <button id="end-game" class="admin-btn admin-btn-end" type="button">◼ Encerrar</button>
+          </div>
         </div>
         <ol id="online-scoreboard"><li>Conectando...</li></ol>
       </aside>

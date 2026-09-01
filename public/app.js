@@ -34,13 +34,22 @@ function atualizarModoSala() {
   const hostButton = document.querySelector('#host-mode');
   const roomField = document.querySelector('#room-code-field');
   const createOptions = document.querySelector('#create-options');
-  if (!joinButton || !hostButton || !roomField || !createOptions) return;
+  if (!joinButton || !hostButton || !roomField || !createOptions) {
+    console.warn('Elementos de seleção de modo não encontrados');
+    return;
+  }
 
   const modoCriar = modoSala === 'criar';
   joinButton.classList.toggle('active', !modoCriar);
   hostButton.classList.toggle('active', modoCriar);
-  roomField.classList.toggle('hidden', modoCriar);
-  createOptions.classList.toggle('hidden', !modoCriar);
+  
+  if (modoCriar) {
+    roomField.classList.add('hidden');
+    createOptions.classList.remove('hidden');
+  } else {
+    roomField.classList.remove('hidden');
+    createOptions.classList.add('hidden');
+  }
 }
 
 function calcularMultiplicador() {
@@ -218,8 +227,14 @@ document.querySelector('#login-form').addEventListener('submit', (event) => {
     state.perguntas = organizarPerguntas(resultado.perguntas);
     document.querySelector('#player-label').textContent = state.nome;
     document.querySelector('#room-code-label').textContent = codigoSala;
-    document.querySelector('#room-status').textContent = resultado.admin ? 'Você criou esta sala' : 'Jogando com sua turma';
-    document.querySelector('#admin-panel').classList.toggle('hidden', !resultado.admin);
+    const adminPanel = document.querySelector('#admin-panel');
+    if (resultado.admin) {
+      document.querySelector('#room-status').textContent = '✨ Você criou esta sala • Clique em "Iniciar" para começar!';
+      adminPanel.classList.remove('hidden');
+    } else {
+      document.querySelector('#room-status').textContent = '👥 Jogando com sua turma • Aguarde o administrador iniciar';
+      adminPanel.classList.add('hidden');
+    }
     loginScreen.classList.add('hidden');
     gameScreen.classList.remove('hidden');
     renderizarPergunta();
@@ -297,6 +312,7 @@ atualizarModoSala();
 document.querySelector('#exit-button').addEventListener('click', () => {
   gameScreen.classList.add('hidden');
   loginScreen.classList.remove('hidden');
+  document.querySelector('#admin-panel').classList.add('hidden');
   modoSala = 'entrar';
   atualizarModoSala();
 });
