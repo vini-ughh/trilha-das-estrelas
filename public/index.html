@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilha das Estrelas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+  <main class="page-shell">
+    <div id="countdown-overlay" class="countdown-overlay hidden" aria-live="assertive" aria-label="Contagem regressiva"></div>
+    <div class="sky-decor decor-one">✦</div>
+    <div class="sky-decor decor-two">✿</div>
+    <section id="login-screen" class="screen login-screen">
+      <div class="brand-mark">★</div>
+      <p class="eyebrow">UM DESAFIO CHEIO DE COR</p>
+      <h1>Trilha das<br><span>Estrelas</span></h1>
+      <p class="intro">Responda, aprenda e acenda o céu<br>com muitas estrelinhas!</p>
+      <form id="login-form" class="login-form">
+        <div class="room-mode" role="group" aria-label="Modo da sala">
+          <button id="join-mode" class="mode-button active" type="button">Entrar em sala</button>
+          <button id="host-mode" class="mode-button" type="button">Criar sala</button>
+        </div>
+        <label for="player-name">Como podemos te chamar?</label>
+        <input id="player-name" type="text" maxlength="18" placeholder="Digite seu nome" autocomplete="name" required>
+        <div id="room-code-field">
+          <label for="room-code">Código da sala</label>
+          <input id="room-code" type="text" maxlength="6" placeholder="Ex.: A1B2C3" autocomplete="off">
+        </div>
+        <div id="create-options" class="create-options">
+          <div class="field-row">
+            <div><label for="question-count">Quantidade de estrelas</label><select id="question-count"><option value="5">5 estrelas</option><option value="10" selected>10 estrelas</option><option value="15">15 estrelas</option><option value="20">20 estrelas</option></select></div>
+            <div><label for="question-level">Dificuldade</label><select id="question-level"><option value="todos">Todas</option><option value="facil">Fácil</option><option value="medio">Médio</option><option value="dificil">Difícil</option></select></div>
+          </div>
+          <p class="field-note">Você poderá controlar a partida depois de criar a sala.</p>
+        </div>
+        <button class="primary-button" type="submit">Entrar na aventura <span>→</span></button>
+      </form>
+      <p class="tiny-note">20 estrelas • 1 grande aventura</p>
+    </section>
+
+    <section id="game-screen" class="screen game-screen hidden">
+      <header class="game-header">
+        <div>
+          <p class="eyebrow">TRILHA DAS ESTRELAS</p>
+          <h2>Oi, <span id="player-label"></span>! <span class="wave">👋</span></h2>
+        </div>
+        <button id="exit-button" class="text-button" type="button">Sair</button>
+      </header>
+
+      <div class="progress-area">
+        <div class="progress-caption"><span>Seu céu mágico</span><strong id="progress-count">0/20</strong></div>
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div><div id="stars" class="stars"></div></div>
+      </div>
+
+      <div class="online-layout">
+      <div class="question-card">
+        <div class="question-top"><span id="question-number" class="question-number">PERGUNTA 1</span><span id="score-label">0 acertos</span></div>
+        <div id="phase-banner" class="phase-banner" aria-live="polite">
+          <span id="phase-name">Mundo 1 · Céu de Cristal</span>
+          <strong id="phase-bonus">x1</strong>
+        </div>
+        <div id="worlds-strip" class="worlds-strip" aria-label="Mundos da trilha">
+          <span class="world-bubble active">1</span>
+          <span class="world-bubble">2</span>
+          <span class="world-bubble">3</span>
+          <span class="world-bubble">4</span>
+        </div>
+        <div class="question-illustration"><img id="question-image" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/1f308.png" alt="Imagem da pergunta"></div>
+        <h3 id="question-text">Carregando pergunta...</h3>
+        <div id="options" class="options"></div>
+        <div class="question-tools"><button id="hint-button" class="hint-button" type="button">💡 Dica</button><span id="streak-label">🔥 Sequência: 0</span></div>
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+        <p id="explanation" class="explanation" aria-live="polite"></p>
+      </div>
+      <aside class="scoreboard" aria-live="polite">
+        <div class="scoreboard-heading"><div><span class="eyebrow">SALA ONLINE</span><h3>Placar ao vivo</h3></div><strong id="room-code-label">------</strong></div>
+        <p id="room-status" class="room-status">Aguardando jogadores...</p>
+        <div id="admin-panel" class="admin-panel hidden">
+          <p class="admin-label">CONTROLE DA PARTIDA</p>
+          <div class="admin-actions"><button id="start-game" type="button">▶ Iniciar</button><button id="pause-game" type="button">Ⅱ Pausar</button><button id="end-game" type="button">■ Encerrar</button></div>
+        </div>
+        <ol id="online-scoreboard"><li>Conectando...</li></ol>
+      </aside>
+      </div>
+    </section>
+
+    <section id="finish-screen" class="screen finish-screen hidden">
+      <div class="finish-sparkles">✦ ✧ ✦</div>
+      <div class="trophy">🏆</div>
+      <p class="eyebrow">AVENTURA CONCLUÍDA</p>
+      <h2>Você iluminou<br><span>o céu!</span></h2>
+      <p id="finish-message" class="intro"></p>
+      <div class="final-score"><strong id="final-score">0/20</strong><span>estrelinhas conquistadas</span></div>
+      <div class="stats-grid"><div><strong id="stat-correct">0</strong><span>Acertos</span></div><div><strong id="stat-wrong">0</strong><span>Erros</span></div><div><strong id="stat-time">0s</strong><span>Tempo médio</span></div><div><strong id="stat-streak">0</strong><span>Melhor sequência</span></div></div>
+      <div class="ranking"><h3>🏅 Melhores jogadores</h3><ol id="ranking-list"></ol></div>
+      <button id="restart-button" class="primary-button" type="button">Brincar de novo <span>↻</span></button>
+    </section>
+    <div id="confetti" class="confetti" aria-hidden="true"></div>
+  </main>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js?v=4"></script>
+</body>
+</html>
