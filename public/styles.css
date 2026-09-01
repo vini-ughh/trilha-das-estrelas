@@ -86,20 +86,25 @@ h1, h2, h3 { font-family: 'Baloo 2', cursive; margin: 0; line-height: .93; } h1 
 .scoreboard li.current-player { background: #fff0bd; }
 @media (max-width: 820px) { .online-layout { grid-template-columns: 1fr; }.scoreboard { order: 2; }.scoreboard ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-select { width: 100%; border: 2px solid transparent; border-radius: 14px; padding: 14px 12px; color: var(--ink); background: rgba(255,255,255,.92); font: 800 12px 'Nunito', sans-serif; outline: none; box-shadow: 0 5px 0 rgba(37,52,77,.08); }
-select:focus { border-color: var(--mint); }
-.create-options { display: grid; gap: 8px; padding-top: 2px; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.field-row > div { display: grid; gap: 7px; }
-.field-note { margin: 0; color: rgba(255,255,255,.7); font-size: 11px; font-weight: 800; }
+select { width: 100%; border: 2px solid transparent; border-radius: 14px; padding: 14px 12px; color: var(--ink); background: rgba(255,255,255,.92); font: 800 12px 'Nunito', sans-serif; outline: none; box-shadow: 0 5px 0 rgba(37,52,77,.08); transition: all .2s ease; }
+select:focus { border-color: var(--mint); box-shadow: 0 5px 0 rgba(37,52,77,.08), 0 0 0 3px rgba(115,213,186,.2); }
+.config-field { display: grid; gap: 7px; }
+.config-field label { color: rgba(255,255,255,.95); font-size: 13px; font-weight: 900; letter-spacing: 0.5px; }
+.create-options { display: grid; gap: 14px; padding: 16px 14px; margin-top: 12px; border: 2px solid rgba(255,255,255,.25); border-radius: 16px; background: rgba(255,255,255,.08); backdrop-filter: blur(8px); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-note { margin: 0; color: rgba(255,255,255,.75); font-size: 12px; font-weight: 800; text-align: center; }
 .worlds-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 18px; }
 .world-bubble { display: grid; place-items: center; height: 34px; border: 2px solid rgba(93, 122, 165, .25); border-radius: 12px; background: rgba(255, 255, 255, .55); color: var(--muted); font-size: 12px; font-weight: 900; }
 .world-bubble.active { border-color: var(--coral); background: linear-gradient(135deg, rgba(255,128,110,.2), rgba(255,212,92,.2)); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(255,128,110,.28); }
-.admin-panel { margin: 14px 0 12px; padding: 11px; border-radius: 12px; background: #eef8f4; }
-.admin-label { margin: 0 0 8px; color: #648174; font-size: 9px; font-weight: 900; letter-spacing: 1.2px; }
-.admin-actions { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 5px; }
-.admin-actions button { border: 0; border-radius: 8px; padding: 8px 4px; color: #fff; background: var(--mint); cursor: pointer; font: 900 10px 'Nunito', sans-serif; }
-.admin-actions button:nth-child(2) { color: #775c00; background: var(--yellow); }
-.admin-actions button:nth-child(3) { background: var(--coral); }
-.admin-actions button:disabled { cursor: default; opacity: .42; }
+.admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 2px solid rgba(38,52,77,.15); }
+.admin-panel { margin: 14px 0 12px; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(255,212,92,.18), rgba(115,213,186,.12)); border: 1.5px solid rgba(255,212,92,.3); }
+.admin-label { margin: 0; color: #26344d; font-size: 11px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; }
+.admin-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.admin-btn { border: 0; border-radius: 10px; padding: 12px 8px; color: #fff; background: var(--mint); cursor: pointer; font: 900 11px 'Nunito', sans-serif; transition: all .2s ease; box-shadow: 0 4px 0 rgba(38,52,77,.1); }
+.admin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(38,52,77,.15); }
+.admin-btn-start { background: var(--mint); }
+.admin-btn-pause { background: var(--yellow); color: #664400; }
+.admin-btn-end { background: var(--coral); }
+.admin-btn:disabled { cursor: default; opacity: .5; transform: none; }
+.scoreboard li small { display: block; color: var(--muted); font-size: 9px; font-weight: 900; }
 .scoreboard li small { display: block; color: var(--muted); font-size: 9px; font-weight: 900; }
