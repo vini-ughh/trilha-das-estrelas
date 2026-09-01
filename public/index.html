@@ -7,10 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <main class="page-shell">
+    <div id="countdown-overlay" class="countdown-overlay hidden" aria-live="assertive" aria-label="Contagem regressiva"></div>
     <div class="sky-decor decor-one">✦</div>
     <div class="sky-decor decor-two">✿</div>
     <section id="login-screen" class="screen login-screen">
@@ -28,6 +29,13 @@
         <div id="room-code-field">
           <label for="room-code">Código da sala</label>
           <input id="room-code" type="text" maxlength="6" placeholder="Ex.: A1B2C3" autocomplete="off">
+        </div>
+        <div id="create-options" class="create-options">
+          <div class="field-row">
+            <div><label for="question-count">Quantidade de estrelas</label><select id="question-count"><option value="5">5 estrelas</option><option value="10" selected>10 estrelas</option><option value="15">15 estrelas</option><option value="20">20 estrelas</option></select></div>
+            <div><label for="question-level">Dificuldade</label><select id="question-level"><option value="todos">Todas</option><option value="facil">Fácil</option><option value="medio">Médio</option><option value="dificil">Difícil</option></select></div>
+          </div>
+          <p class="field-note">Você poderá controlar a partida depois de criar a sala.</p>
         </div>
         <button class="primary-button" type="submit">Entrar na aventura <span>→</span></button>
       </form>
@@ -51,6 +59,16 @@
       <div class="online-layout">
       <div class="question-card">
         <div class="question-top"><span id="question-number" class="question-number">PERGUNTA 1</span><span id="score-label">0 acertos</span></div>
+        <div id="phase-banner" class="phase-banner" aria-live="polite">
+          <span id="phase-name">Mundo 1 · Céu de Cristal</span>
+          <strong id="phase-bonus">x1</strong>
+        </div>
+        <div id="worlds-strip" class="worlds-strip" aria-label="Mundos da trilha">
+          <span class="world-bubble active">1</span>
+          <span class="world-bubble">2</span>
+          <span class="world-bubble">3</span>
+          <span class="world-bubble">4</span>
+        </div>
         <div class="question-illustration"><img id="question-image" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/1f308.png" alt="Imagem da pergunta"></div>
         <h3 id="question-text">Carregando pergunta...</h3>
         <div id="options" class="options"></div>
@@ -61,6 +79,10 @@
       <aside class="scoreboard" aria-live="polite">
         <div class="scoreboard-heading"><div><span class="eyebrow">SALA ONLINE</span><h3>Placar ao vivo</h3></div><strong id="room-code-label">------</strong></div>
         <p id="room-status" class="room-status">Aguardando jogadores...</p>
+        <div id="admin-panel" class="admin-panel hidden">
+          <p class="admin-label">CONTROLE DA PARTIDA</p>
+          <div class="admin-actions"><button id="start-game" type="button">▶ Iniciar</button><button id="pause-game" type="button">Ⅱ Pausar</button><button id="end-game" type="button">■ Encerrar</button></div>
+        </div>
         <ol id="online-scoreboard"><li>Conectando...</li></ol>
       </aside>
       </div>
@@ -80,6 +102,6 @@
     <div id="confetti" class="confetti" aria-hidden="true"></div>
   </main>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

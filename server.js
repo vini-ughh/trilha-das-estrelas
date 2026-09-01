@@ -9,7 +9,13 @@ const { Server } = require('socket.io');
 
 const app = express();
 const httpServer = http.createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  transports: ['websocket', 'polling'],
+  pingTimeout: 20000,
+  pingInterval: 25000,
+  upgradeTimeout: 20000,
+  cors: { origin: '*' }
+});
 const PORT = process.env.PORT || 3000;
 const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL }) : null;
 const salas = new Map();
@@ -68,6 +74,13 @@ const swaggerDocument = {
   }
 };
 
+app.set('trust proxy', 1);
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -123,12 +136,13 @@ function gerarCodigo() {
   return codigo;
 }
 
-function perguntasDaSala() {
-  return perguntas.map(({ resposta, ...pergunta }) => pergunta);
+function perguntasDaSala(lista = perguntas) {
+  return lista.map(({ resposta, ...pergunta }) => pergunta);
 }
 
 function placarDaSala(sala) {
-  return [...sala.jogadores.values()].sort((a, b) => b.acertos - a.acertos || a.nome.localeCompare(b.nome));
+  return [...sala.jogadores.values()].map((jogador) => ({ nome: jogador.nome, acertos: jogador.acertos, respondidas: jogador.respondidas.size }))
+    .sort((a, b) => b.acertos - a.acertos || a.nome.localeCompare(b.nome));
 }
 
 function transmitirPlacar(codigo) {
@@ -136,10 +150,18 @@ function transmitirPlacar(codigo) {
   if (sala) io.to(codigo).emit('placar-atualizado', placarDaSala(sala));
 }
 
+function transmitirEstadoSala(codigo) {
+  const sala = salas.get(codigo);
+  if (sala) io.to(codigo).emit('estado-sala', { status: sala.status, quantidade: sala.perguntas.length, nivel: sala.nivel });
+}
+
 io.on('connection', (socket) => {
-  socket.on('criar-sala', ({ nome }, callback) => {
+  socket.on('criar-sala', ({ nome, quantidade = 20, nivel = 'todos' }, callback) => {
+    const perguntasDisponiveis = perguntas.filter((pergunta) => nivel === 'todos' || pergunta.nivel === nivel);
+    const quantidadeValida = Math.min(Math.max(Number(quantidade) || 1, 1), perguntasDisponiveis.length);
+    if (!perguntasDisponiveis.length) return callback({ erro: 'Escolha uma dificuldade válida.' });
     const codigo = gerarCodigo();
-    const sala = { jogadores: new Map(), perguntas: perguntasDaSala() };
+    const sala = { jogadores: new Map(), perguntas: perguntasDaSala(perguntasDisponiveis.sort(() => Math.random() - 0.5).slice(0, quantidadeValida)), status: 'aguardando', nivel };
     salas.set(codigo, sala);
     entrarNaSala(socket, sala, codigo, nome, callback, true);
   });
@@ -155,18 +177,59 @@ io.on('connection', (socket) => {
     const jogador = socket.data.jogador;
     const sala = jogador && salas.get(jogador.codigo);
     const pergunta = sala && sala.perguntas.find((item) => item.id === Number(perguntaId));
-    if (!sala || !pergunta || jogador.respondidas.has(pergunta.id)) return;
+    if (!callback) callback = () => {};
+    if (!sala || !pergunta) return callback({ erro: 'Pergunta inválida.' });
+    if (sala.status !== 'iniciada') return callback({ erro: sala.status === 'pausada' ? 'A partida está pausada.' : 'A partida ainda não começou.' });
+    if (jogador.respondidas.has(pergunta.id)) return callback({ erro: 'Você já respondeu esta pergunta.' });
     jogador.respondidas.add(pergunta.id);
     const perguntaCompleta = perguntas.find((item) => item.id === pergunta.id);
     const correta = perguntaCompleta.resposta === Number(resposta);
     if (correta) jogador.acertos += 1;
     if (pool) {
-      try { await pool.query('INSERT INTO tentativas (nome, pergunta_id, resposta, correta) VALUES ($1, $2, $3, $4)', [jogador.nome, pergunta.id, resposta, correta]); } catch (erro) { console.error('Não foi possível salvar a tentativa online:', erro.message); }
+      try { await pool.query('INSERT INTO tentativas (nome, pergunta_id, resposta, correta) VALUES ($1, $2, $3, $4)', [jogador.nome, pergunta.id, Number(resposta) === -1 ? null : resposta, correta]); } catch (erro) { console.error('Não foi possível salvar a tentativa online:', erro.message); }
     }
     const resultado = { correta, explicacao: `A resposta correta é ${perguntaCompleta.opcoes[perguntaCompleta.resposta]}.` };
     callback(resultado);
     socket.emit('resultado-online', resultado);
     transmitirPlacar(jogador.codigo);
+  });
+
+  socket.on('usar-dica', ({ perguntaId }, callback = () => {}) => {
+    const jogador = socket.data.jogador;
+    const sala = jogador && salas.get(jogador.codigo);
+    const pergunta = sala && perguntas.find((item) => item.id === Number(perguntaId));
+    if (!sala || !pergunta || sala.status !== 'iniciada') return callback({ erro: 'A dica só pode ser usada durante a partida.' });
+    const removidas = pergunta.opcoes.map((_, indice) => indice).filter((indice) => indice !== pergunta.resposta).sort(() => Math.random() - 0.5).slice(0, 2);
+    callback({ sucesso: true, removidas });
+  });
+
+  socket.on('controle-sala', ({ acao }, callback = () => {}) => {
+    const jogador = socket.data.jogador;
+    const sala = jogador && salas.get(jogador.codigo);
+    if (!sala || !jogador.admin) return callback({ erro: 'Apenas o administrador pode controlar a sala.' });
+    if (!['iniciar', 'pausar', 'encerrar'].includes(acao)) return callback({ erro: 'Ação inválida.' });
+    if (sala.timer) clearInterval(sala.timer);
+    if (acao === 'iniciar') {
+      sala.status = 'contando';
+      callback({ sucesso: true, status: sala.status });
+      transmitirEstadoSala(jogador.codigo);
+      let contagem = 3;
+      io.to(jogador.codigo).emit('contagem-regressiva', contagem);
+      sala.timer = setInterval(() => {
+        contagem -= 1;
+        io.to(jogador.codigo).emit('contagem-regressiva', contagem);
+        if (contagem === 0) {
+          clearInterval(sala.timer);
+          sala.timer = null;
+          sala.status = 'iniciada';
+          transmitirEstadoSala(jogador.codigo);
+        }
+      }, 1000);
+      return;
+    }
+    sala.status = acao === 'pausar' ? 'pausada' : 'encerrada';
+    callback({ sucesso: true, status: sala.status });
+    transmitirEstadoSala(jogador.codigo);
   });
 
   socket.on('disconnect', () => {
@@ -186,8 +249,9 @@ function entrarNaSala(socket, sala, codigo, nome, callback, admin) {
   sala.jogadores.set(socket.id, jogador);
   socket.data.jogador = jogador;
   socket.join(codigo);
-  callback({ sucesso: true, codigo, perguntas: sala.perguntas, admin });
+  callback({ sucesso: true, codigo, perguntas: sala.perguntas, admin, status: sala.status, nivel: sala.nivel });
   transmitirPlacar(codigo);
+  transmitirEstadoSala(codigo);
 }
 
 async function iniciarServidor() {

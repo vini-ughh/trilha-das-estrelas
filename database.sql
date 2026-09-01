@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS tentativas (
   respondida_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE tentativas DROP CONSTRAINT IF EXISTS tentativas_resposta_check;
+ALTER TABLE tentativas ADD CONSTRAINT tentativas_resposta_check CHECK (resposta IS NULL OR (resposta >= 0 AND resposta < 4));
+
 INSERT INTO perguntas (id, nivel, pergunta, imagem, opcoes, resposta) VALUES
 (1, 'facil', 'Qual animal faz "miau"?', 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/1f431.png', '["Cachorro", "Gato", "Pato", "Cavalo"]', 1),
 (2, 'facil', 'Quanto é 2 + 3?', 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/1f522.png', '["4", "5", "6", "7"]', 1),
