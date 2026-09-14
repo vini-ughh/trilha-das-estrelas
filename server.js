@@ -292,7 +292,11 @@ async function iniciarServidor() {
   httpServer.listen(PORT, '0.0.0.0', () => console.log(`Trilha das Estrelas rodando na porta ${PORT}`));
 }
 
-iniciarServidor().catch((erro) => {
-  console.error('Não foi possível iniciar o banco de dados:', erro.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  iniciarServidor().catch((erro) => {
+    console.error('Não foi possível iniciar o banco de dados:', erro.message);
+    process.exit(1);
+  });
+}
+
+module.exports = app;
