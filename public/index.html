@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=1000">
 </head>
 <body>
   <main class="page-shell">
@@ -21,8 +21,8 @@
       <p class="intro">Responda, aprenda e acenda o céu<br>com muitas estrelinhas!</p>
       <form id="login-form" class="login-form">
         <div class="room-mode" role="group" aria-label="Modo da sala">
-          <button id="join-mode" class="mode-button active" type="button">Entrar em sala</button>
-          <button id="host-mode" class="mode-button" type="button">Criar sala</button>
+          <button id="join-mode" class="mode-button" type="button">Entrar em sala</button>
+          <button id="host-mode" class="mode-button active" type="button">Criar sala</button>
         </div>
         <label for="player-name">Como podemos te chamar?</label>
         <input id="player-name" type="text" maxlength="18" placeholder="Digite seu nome" autocomplete="name" required>
@@ -124,6 +124,6 @@
     <div id="confetti" class="confetti" aria-hidden="true"></div>
   </main>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=1000"></script>
 </body>
 </html>

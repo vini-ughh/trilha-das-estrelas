@@ -74,11 +74,20 @@ function atualizarFaseDisplay() {
 }
 
 function embaralhar(lista) {
-  return [...lista].sort(() => Math.random() - 0.5);
+  const nova = [...lista];
+  for (let i = nova.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [nova[i], nova[j]] = [nova[j], nova[i]];
+  }
+  return nova;
 }
 
 function organizarPerguntas(perguntas) {
-  return ['facil', 'medio', 'dificil'].flatMap((nivel) => embaralhar(perguntas.filter((pergunta) => pergunta.nivel === nivel)));
+  const embaralhadas = embaralhar(perguntas);
+  return embaralhadas.sort((a, b) => {
+    const ordemNivel = { facil: 0, medio: 1, dificil: 2 };
+    return ordemNivel[a.nivel] - ordemNivel[b.nivel];
+  });
 }
 
 async function carregarPerguntas() {
@@ -96,7 +105,7 @@ function renderizarPergunta() {
   document.querySelector('#question-number').textContent = `NÍVEL ${nomesNiveis[pergunta.nivel]} • PERGUNTA ${state.atual + 1}`;
   document.querySelector('#question-text').textContent = pergunta.pergunta;
   const image = document.querySelector('#question-image');
-  image.src = pergunta.imagem.replace('2600-fe0f.png', '2600.png');
+  image.src = pergunta.imagem;
   image.alt = `Imagem da pergunta: ${pergunta.pergunta}`;
   document.querySelector('#score-label').textContent = `${state.acertos} acerto${state.acertos === 1 ? '' : 's'}`;
   document.querySelector('#feedback').textContent = '';
